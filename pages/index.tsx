@@ -18,7 +18,7 @@ export default function Home() {
     <>
       <Header></Header>
       <main>
-        <h2>welcome</h2>
+        <h2 className="text-[#22333B] font-semibold text-5xl max-w-lg mx-auto pt-8 text-center mt-20">welcome</h2>
       </main>
     </>
   );
