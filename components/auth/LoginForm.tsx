@@ -20,7 +20,7 @@ const loginForm: React.FC = () => {
             <p className="m-auto text-xl max-w-lg text-center">
                 <Link className="m-auto text-xl max-w-lg underline text-center" href="/">forgot password?</Link>
             </p>
-            <p className="mx-auto text-xl max-w-lg text-center mb-10">New user? - <Link className="underline" href="/auth/register">Register</Link></p>
+            <p className="m-auto text-xl max-w-lg text-center">New user? - <Link className="underline" href="/auth/register">Register</Link></p>
         </div>
     )
 }
