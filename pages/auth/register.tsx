@@ -1,5 +1,4 @@
-//TODO: implement this page and it's components
-
+import RegisterForm from "@/components/auth/RegisterForm";
 import Header from "@/components/Header";
 import Head from "next/head";
 
@@ -12,6 +11,7 @@ const register: React.FC = () => {
                 </title>
             </Head>
             <Header />
+            <RegisterForm></RegisterForm>
         </>
     )
 };

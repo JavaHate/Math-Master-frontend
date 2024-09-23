@@ -1,5 +1,3 @@
-//TODO: implement this page and it's components
-
 import LoginForm from "@/components/auth/LoginForm";
 import Header from "@/components/Header";
 import Head from "next/head";
