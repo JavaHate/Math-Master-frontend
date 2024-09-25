@@ -1,53 +1,109 @@
-import Link from "next/link";
-import { useState } from "react";
+'use client'
 
-const loginForm: React.FC = () => {
+import { useState } from "react"
+import Link from "next/link"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
-    const [username, setUsername] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [error, setError] = useState<string | null>(null);
+const formSchema = z.object({
+  username: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+})
 
-    const submitForm = (e: React.FormEvent) => {
-        console.log("logging in...");
-        e.preventDefault();
-    }
+export default function LoginForm() {
+  const [error, setError] = useState<string | null>(null)
 
-    return (
-        <div className="bg-[#7d8491] rounded-lg border-2 border-[#22333b] mx-auto my-12 max-w-3xl">
-            
-            <h2 className="text-[#22333B] font-semibold text-5xl max-w-lg mx-auto pt-8 text-center mt-20">Log in to your MathMaster account</h2>
-            <form className="flex flex-col p-5 max-w-lg mx-auto pt-8" onSubmit={submitForm}>
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  })
 
-                <label className="text-[#22333B] font-semibold text-2xl pt-8" htmlFor="Username">Username</label>
-                <input 
-                    className="border border-[#22333b] p-2 bg-[#eaf0ce]" 
-                    type="text" 
-                    name="Username" 
-                    id="Username"
-                    placeholder="Username"
-                    onChange={(e) => setUsername(e.target.value)}
-                ></input>
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("logging in...", values)
+    // Here you would typically handle the login logic
+    // For now, we'll just simulate an error
+    setError("Invalid username or password")
+  }
 
-                <label className="text-[#22333B] font-semibold text-2xl pt-8" htmlFor="Password">Password</label>
-                <input 
-                    className="border border-[#22333b] p-2 bg-[#eaf0ce]" 
-                    type="password" 
-                    name="Password" 
-                    id="Password" 
-                    placeholder="Password"
-                    onChange={(e) => setPassword(e.target.value)}
-                ></input>
-
-                {error && <p className="m-auto text-xl max-w-lg text-center text-red-600">{error}</p>}
-                <button className="bg-[#22333B] text-white font-semibold text-xl rounded-lg p-3 mt-10 max-w-[130px] ml-auto" type="submit">sign in</button>
-
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-3xl font-bold text-center">Login</CardTitle>
+          <CardDescription className="text-center">
+            Enter your MathMaster account details
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Enter your password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <Button type="submit" className="w-full">Sign In</Button>
             </form>
-            <p className="m-auto text-xl max-w-lg text-center">
-                <Link className="m-auto text-xl max-w-lg underline text-center" href="/">forgot password?</Link>
-            </p>
-            <p className="m-auto text-xl max-w-lg text-center mb-20">New user? - <Link className="underline" href="/auth/register">Register</Link></p>
-        </div>
-    )
+          </Form>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-2">
+          <Link href="/" className="text-sm text-center text-blue-500 hover:underline">
+            Forgot password?
+          </Link>
+          <div className="text-sm text-center">
+            New user? {" "}
+            <Link href="/auth/register" className="text-blue-500 hover:underline">
+              Register
+            </Link>
+          </div>
+        </CardFooter>
+      </Card>
+    </div>
+  )
 }
-
-export default loginForm;
