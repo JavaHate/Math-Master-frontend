@@ -1,94 +1,142 @@
-import Link from "next/link";
-import { useState } from "react";
+'use client'
 
-const loginForm: React.FC = () => {
+import { useState } from "react"
+import Link from "next/link"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
-    const [username, setUsername] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [email, setEmail] = useState<string>("");
-    const [repeatPassword, setRepeatPassword] = useState<string>("");
-    const [error, setError] = useState<string | null>(null);
+const formSchema = z.object({
+  username: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+  repeatPassword: z.string(),
+}).refine((data) => data.password === data.repeatPassword, {
+  message: "Passwords do not match",
+  path: ["repeatPassword"],
+})
 
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+export default function RegisterForm() {
+  const [error, setError] = useState<string | null>(null)
 
-    const validate = () => {
-        if (!username || !email || !password || !repeatPassword) {
-            setError("Please fill in all fields");
-            return false;
-        }
-        if (!emailRegex.test(email)) {
-            setError("Please enter a valid email address");
-            return false;
-        }
-        if (password !== repeatPassword) {
-            setError("Passwords do not match");
-            return false;
-        }
-        return true
-    }
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      repeatPassword: "",
+    },
+  })
 
-    const submitForm = (e: React.FormEvent) => {
-        console.log("logging in...");
-        e.preventDefault();
-        if(!validate()) {
-            return;   
-        }
-        // handle valid registration
-    }
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log("Registering...", values)
+    // Here you would typically handle the registration logic
+    // For now, we'll just simulate a successful registration
+    setError(null)
+    // You can add your registration logic here
+  }
 
-    return (
-        <div className="bg-[#7d8491] rounded-lg border-2 border-[#22333b] mx-auto my-12 max-w-3xl">
-            <h2 className="text-[#22333B] font-semibold text-5xl max-w-lg mx-auto pt-8 text-center mt-20">Register to MathMaster</h2>
-
-            <form className="flex flex-col p-5 max-w-lg mx-auto pt-8" onSubmit={submitForm}>
-
-                <label className="text-[#22333B] font-semibold text-2xl pt-8" htmlFor="Username">Username</label>
-                <input
-                    className="border border-[#22333b] p-2 bg-[#eaf0ce]"
-                    type="text"
-                    name="Username"
-                    id="Username"
-                    placeholder="Username"
-                    onChange={(e) => setUsername(e.target.value)}
-                ></input>
-
-                <label className="text-[#22333B] font-semibold text-2xl pt-8" htmlFor="email">Email</label>
-                <input
-                    className="border border-[#22333b] p-2 bg-[#eaf0ce]"
-                    type="email"
-                    name="email"
-                    id="email"
-                    placeholder="example@example.com"
-                    onChange={(e) => setEmail(e.target.value)}
-                ></input>
-
-                <label className="text-[#22333B] font-semibold text-2xl pt-8" htmlFor="Password">Password</label>
-                <input
-                    className="border border-[#22333b] p-2 bg-[#eaf0ce]"
-                    type="password"
-                    name="Password"
-                    id="Password"
-                    placeholder="Password"
-                    onChange={(e) => setPassword(e.target.value)}
-                ></input>
-
-                <label className="text-[#22333B] font-semibold text-2xl pt-8" htmlFor="Password2">Repeat password</label>
-                <input
-                    className="border border-[#22333b] p-2 bg-[#eaf0ce]"
-                    type="password"
-                    name="Password2"
-                    id="Password2"
-                    placeholder="Password"
-                    onChange={(e) => setRepeatPassword(e.target.value)}
-                ></input>
-
-                {error && <p className="m-auto text-xl max-w-lg text-center text-red-600">{error}</p>}
-                
-                <button className="bg-[#22333B] text-white font-semibold text-xl rounded-lg p-3 mt-10 max-w-[130px] ml-auto" type="submit">register</button>
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-3xl font-bold text-center">Register</CardTitle>
+          <CardDescription className="text-center">
+            Create your MathMaster account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="Enter your email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Enter your password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="repeatPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Repeat Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Repeat your password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <Button type="submit" className="w-full">Register</Button>
             </form>
-            <p className="m-auto text-xl max-w-lg text-center mb-20">Already have an account? - <Link className="underline" href="/auth/login">Log in</Link></p>
-        </div>
-    )
+          </Form>
+        </CardContent>
+        <CardFooter>
+          <p className="text-sm text-center w-full">
+            Already have an account?{" "}
+            <Link href="/auth/login" className="text-primary hover:underline">
+              Log in
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
+    </div>
+  )
 }
-
-export default loginForm;

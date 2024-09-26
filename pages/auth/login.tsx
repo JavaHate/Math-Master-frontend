@@ -7,7 +7,7 @@ const login: React.FC = () => {
         <>
             <Head>
                 <title>
-                    login | MathMaster
+                    Register | MathMaster
                 </title>
             </Head>
             <Header />
