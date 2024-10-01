@@ -41,10 +41,10 @@ const Game: React.FC = () => {
   const generateProblem = async () => {
     try 
     {
-      const response = await fetch('http://localhost:5032/game/generate-problem');
+      const response = await fetch('http://localhost:5032/question/random');
     if (response.ok) {
       const data = await response.json();
-      setProblem(data.problem);
+      setProblem(data[0].text);
     } else {
       console.error('Failed to fetch the problem from the backend');
     }
