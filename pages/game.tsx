@@ -11,8 +11,8 @@ const Game: React.FC = () => {
   const [gameMode, setGameMode] = useState<string | undefined>(undefined)
   const [problem, setProblem] = useState<string>('')
   const [answer, setAnswer] = useState<string>('')
-  const [score, setScore] = useState<number>(0)
-  const [timeLeft, setTimeLeft] = useState<number>(6)
+  const [score, setScore] = useState<number>(0) // this 0 too needs to be a variable
+  const [timeLeft, setTimeLeft] = useState<number>(30) // needs to be changed to a button or something
   const [gameOver, setGameOver] = useState<boolean>(false)
 
   useEffect(() => {
@@ -38,11 +38,19 @@ const Game: React.FC = () => {
     }
   }, [gameMode])
 
-  const generateProblem = () => {
-    const num1 = Math.floor(Math.random() * 10) + 1
-    const num2 = Math.floor(Math.random() * 10) + 1
-    const operator = ['+', '-', '*'][Math.floor(Math.random() * 3)]
-    setProblem(`${num1} ${operator} ${num2}`)
+  const generateProblem = async () => {
+    try 
+    {
+      const response = await fetch('http://localhost:5032/game/generate-problem');
+    if (response.ok) {
+      const data = await response.json();
+      setProblem(data.problem);
+    } else {
+      console.error('Failed to fetch the problem from the backend');
+    }
+  } catch (error) {
+    console.error('Error fetching problem:', error);
+  }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
