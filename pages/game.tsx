@@ -41,7 +41,7 @@ const Game: React.FC = () => {
   const generateProblem = async () => {
     try 
     {
-      const response = await fetch('http://localhost:5032/question/random');
+      const response = await fetch('/api/question/random')
     if (response.ok) {
       const data = await response.json();
       setProblem(data[0].text);
