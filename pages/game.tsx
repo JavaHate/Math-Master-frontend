@@ -7,12 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const Game: React.FC = () => {
   const router = useRouter()
-  const { mode } = router.query
+  const { mode, userId } = router.query
   const [gameMode, setGameMode] = useState<string | undefined>(undefined)
   const [problem, setProblem] = useState<string>('')
   const [answer, setAnswer] = useState<string>('')
   const [score, setScore] = useState<number>(0) // this 0 too needs to be a variable
   const [timeLeft, setTimeLeft] = useState<number>(30) // needs to be changed to a button or something
+  const [startTime, setStartTime] = useState<string>('')
   const [gameOver, setGameOver] = useState<boolean>(false)
 
   useEffect(() => {
@@ -20,6 +21,10 @@ const Game: React.FC = () => {
       setGameMode(mode as string)
     }
   }, [mode])
+
+  useEffect (() => {
+    setStartTime(localISOTime());
+  }, [])
 
   useEffect(() => {
     generateProblem()
@@ -59,11 +64,50 @@ const Game: React.FC = () => {
     if (parseInt(answer) === correctAnswer) {
       setScore(score + 1)
       generateProblem()
-    } else if (gameMode === 'endless') {
-      setGameOver(true)
+    } else {
+      if (gameMode === 'endless') {
+        setGameOver(true)
+      }
+      saveGame()
     }
     setAnswer('')
   }
+
+  const saveGame = async () => {
+    const gameData = {
+      gameMode: gameMode,
+      score: score,
+      startTime: startTime,
+      endTime: localISOTime(),
+      userId: userId
+    };
+
+    try {
+      const response = await fetch('api/game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gameData),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      console.log('Game saved successfully:', result);
+    } catch (error) {
+      console.error('Error saving game:', error);
+    }
+  }
+
+  const localISOTime = () => {
+    const now = new Date();
+    const offset = now.getTimezoneOffset() * 60000;
+    const localTime = new Date(now.getTime() - offset);
+    return localTime.toISOString().slice(0, -1);
+  };
 
   const handleReturnHome = () => {
     router.push('/')
