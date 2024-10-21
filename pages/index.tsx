@@ -1,7 +1,7 @@
 import Image from "next/image"
 import localFont from "next/font/local"
 import Header from "@/components/Header"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -24,10 +24,28 @@ export default function Home() {
   const [username, setUsername] = useState("John Doe")
   const [level, setLevel] = useState(5)
   const [totalScore, setTotalScore] = useState(1250)
+  const [userId, setUserId] = useState('')
   const router = useRouter()
 
+  useEffect (() => {
+    const fetchUserId = async () => {
+      try {
+        const response = await fetch('/api/user/email/valdemar@example.com') // TODO: Remove placeholder once authentication is implemented
+        if (response.ok) {
+          const data = await response.json();
+          setUserId(data.id);
+        } else {
+          console.error('Failed to fetch data from the backend');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchUserId();
+  }, [])
+
   const handleStartGame = (mode: string) => {
-    router.push(`/game?mode=${mode}`)
+    router.push(`/game?mode=${mode}&userId=${userId}`)
   }
 
   return (
