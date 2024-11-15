@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Clock, InfinityIcon, Settings, Trophy, User } from "lucide-react"
 import { useRouter } from 'next/router'
+import withAuth from "@/components/WithAuth"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -20,8 +21,8 @@ const geistMono = localFont({
   weight: "100 900",
 })
 
-export default function Home() {
-  const [username, setUsername] = useState("John Doe")
+const Home: React.FC = () => {
+  const [username, setUsername] = useState('')
   const [level, setLevel] = useState(5)
   const [totalScore, setTotalScore] = useState(1250)
   const [userId, setUserId] = useState('')
@@ -30,15 +31,17 @@ export default function Home() {
   useEffect (() => {
     const fetchUserId = async () => {
       try {
-        const response = await fetch('/api/user/email/valdemar@example.com') // TODO: Remove placeholder once authentication is implemented
+        const response = await fetch('/api/user/id/' + localStorage.getItem('currentUserId'))
         if (response.ok) {
           const data = await response.json();
           setUserId(data.id);
+          setUsername(data.username);
         } else {
           console.error('Failed to fetch data from the backend');
         }
       } catch (error) {
         console.error('Error fetching data:', error);
+        window.location.href = '/auth/login';
       }
     };
     fetchUserId();
@@ -150,3 +153,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default withAuth(Home);

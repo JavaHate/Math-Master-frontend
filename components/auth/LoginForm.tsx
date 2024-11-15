@@ -40,10 +40,33 @@ export default function LoginForm() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("logging in...", values)
-    // Here you would typically handle the login logic
-    // For now, we'll just simulate an error
-    setError("Invalid username or password")
+    setError(null)
+    loginUser(values)
   }
+
+  const loginUser = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const response = await fetch('../api/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message);
+      }
+
+      localStorage.setItem('currentUserId', result.id);
+      console.log('User logged in successfully:', result);
+      window.location.href = '/';
+    } catch (error: any) {
+      console.error(error.message);
+      setError(error.message);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

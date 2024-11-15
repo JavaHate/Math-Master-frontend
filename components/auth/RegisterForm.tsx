@@ -41,18 +41,40 @@ export default function RegisterForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
-      email: "",
       password: "",
+      email: "",
       repeatPassword: "",
     },
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("Registering...", values)
-    // Here you would typically handle the registration logic
-    // For now, we'll just simulate a successful registration
     setError(null)
-    // You can add your registration logic here
+    createUser(values)
+  }
+
+  const createUser = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const response = await fetch('../api/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message);
+      }
+
+      localStorage.setItem('currentUserId', result.id);
+      console.log('User created successfully:', result);
+      window.location.href = '/';
+    } catch (error: any) {
+      console.error(error.message);
+      setError(error.message)
+    }
   }
 
   return (

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import withAuth from "@/components/WithAuth"
 
 const Game: React.FC = () => {
   const router = useRouter()
@@ -163,4 +164,4 @@ const Game: React.FC = () => {
   )
 }
 
-export default Game
+export default withAuth(Game);
