@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Clock, InfinityIcon, Settings, Trophy, User } from "lucide-react"
 import { useRouter } from 'next/router'
 import withAuth from "@/components/WithAuth"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -21,30 +22,54 @@ const geistMono = localFont({
   weight: "100 900",
 })
 
+interface Game {
+  id: string;
+  mode: string;
+  score: number;
+  date: string;
+}
+
 const Home: React.FC = () => {
   const [username, setUsername] = useState('')
   const [level, setLevel] = useState(5)
   const [totalScore, setTotalScore] = useState(1250)
   const [userId, setUserId] = useState('')
+  const [games, setGames] = useState<Game[]>([])
   const router = useRouter()
 
-  useEffect (() => {
-    const fetchUserId = async () => {
-      try {
-        const response = await fetch('/api/user/id/' + localStorage.getItem('currentUserId'))
-        if (response.ok) {
-          const data = await response.json();
-          setUserId(data.id);
-          setUsername(data.username);
-        } else {
-          console.error('Failed to fetch data from the backend');
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        window.location.href = '/auth/login';
+  const fetchUserId = async () => {
+    try {
+      const response = await fetch('/api/user/id/' + localStorage.getItem('currentUserId'))
+      if (response.ok) {
+        const data = await response.json()
+        setUserId(data.id)
+        setUsername(data.username)
+      } else {
+        console.error('Failed to fetch data from the backend')
       }
-    };
-    fetchUserId();
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      window.location.href = '/auth/login'
+    }
+  }
+
+  const fetchGames = async () => {
+    try {
+      const response = await fetch('/api/game/all')
+      if (response.ok) {
+        const data = await response.json()
+        setGames(data)
+      } else {
+        console.error('Failed to fetch games data from the backend')
+      }
+    } catch (error) {
+      console.error('Error fetching games data:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchUserId()
+    fetchGames()
   }, [])
 
   const handleStartGame = (mode: string) => {
@@ -149,9 +174,34 @@ const Home: React.FC = () => {
             <Settings className="mr-2 h-4 w-4" /> Settings
           </Button>
         </div>
+
+        <div className="mt-12">
+          <h2 className="text-2xl font-semibold text-center">Games Played</h2>
+          <Table className="mt-4">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Game ID</TableHead>
+                <TableHead>Mode</TableHead>
+                <TableHead>Score</TableHead>
+                <TableHead>Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {console.log(games)}
+              {games.map((game) => (
+                <TableRow key={game.id}>
+                  <TableCell>{game.id}</TableCell>
+                  <TableCell>{game.mode}</TableCell>
+                  <TableCell>{game.score}</TableCell>
+                  <TableCell>{new Date(game.date).toLocaleDateString()}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </main>
     </div>
   )
 }
 
-export default withAuth(Home);
+export default withAuth(Home)
