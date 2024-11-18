@@ -24,9 +24,11 @@ const geistMono = localFont({
 
 interface Game {
   id: string;
-  mode: string;
+  gameMode: string;
   score: number;
-  date: string;
+  startTime: string;
+  userId: string;
+  username?: string;
 }
 
 const Home: React.FC = () => {
@@ -35,6 +37,7 @@ const Home: React.FC = () => {
   const [totalScore, setTotalScore] = useState(1250)
   const [userId, setUserId] = useState('')
   const [games, setGames] = useState<Game[]>([])
+  const [rank, setRank] = useState(0)
   const router = useRouter()
 
   const fetchUserId = async () => {
@@ -53,12 +56,60 @@ const Home: React.FC = () => {
     }
   }
 
+  const fetchUsername = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/user/id/${userId}`)
+      if (response.ok) {
+        const data = await response.json()
+        return data.username
+      } else {
+        console.error('Failed to fetch username from the backend')
+        return 'Unknown'
+      }
+    } catch (error) {
+      console.error('Error fetching username:', error)
+      return 'Unknown'
+    }
+  }
+
+  const calculateUserStats = (games: Game[], currentUserId: string) => {
+    if (!currentUserId || !games.length) return;
+
+    // Calculate total score from all user's games
+    const userGames = games.filter(game => game.userId === currentUserId);
+    const userTotalScore = userGames.reduce((sum, game) => sum + game.score, 0);
+    setTotalScore(userTotalScore);
+
+    // Calculate level (score / 10)
+    const calculatedLevel = Math.floor(userTotalScore / 10);
+    setLevel(calculatedLevel || 0);
+
+    // Calculate user ranking
+    const userScores = new Map<string, number>();
+    games.forEach(game => {
+      const currentScore = userScores.get(game.userId) || 0;
+      userScores.set(game.userId, currentScore + game.score);
+    });
+
+    // Convert to array and sort by score
+    const rankings = Array.from(userScores.entries())
+      .sort(([, a], [, b]) => b - a);
+    
+    // Find user's rank (1-based index)
+    const userRank = rankings.findIndex(([id]) => id === currentUserId) + 1;
+    setRank(userRank || 0);
+  };
+
   const fetchGames = async () => {
     try {
       const response = await fetch('/api/game/all')
       if (response.ok) {
         const data = await response.json()
-        setGames(data)
+        const gamesWithUsernames = await Promise.all(data.map(async (game: Game) => {
+          const username = await fetchUsername(game.userId)
+          return { ...game, username }
+        }))
+        setGames(gamesWithUsernames)
       } else {
         console.error('Failed to fetch games data from the backend')
       }
@@ -68,9 +119,15 @@ const Home: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchUserId()
-    fetchGames()
-  }, [])
+    if (userId && games.length > 0) {
+      calculateUserStats(games, userId);
+    }
+  }, [userId, games]);
+
+  useEffect(() => {
+    fetchUserId();
+    fetchGames();
+  }, []);
 
   const handleStartGame = (mode: string) => {
     router.push(`/game?mode=${mode}&userId=${userId}`)
@@ -114,8 +171,10 @@ const Home: React.FC = () => {
               <Trophy className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">#42</div>
-              <p className="text-xs text-muted-foreground">Out of 1000 players</p>
+              <div className="text-2xl font-bold">#{rank}</div>
+              <p className="text-xs text-muted-foreground">
+                Out of {games.length > 0 ? new Set(games.map(g => g.userId)).size : 0} players
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -181,19 +240,20 @@ const Home: React.FC = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Game ID</TableHead>
+                <TableHead>User</TableHead>
                 <TableHead>Mode</TableHead>
                 <TableHead>Score</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Time</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {console.log(games)}
               {games.map((game) => (
                 <TableRow key={game.id}>
                   <TableCell>{game.id}</TableCell>
-                  <TableCell>{game.mode}</TableCell>
+                  <TableCell>{game.username}</TableCell>
+                  <TableCell>{game.gameMode}</TableCell>
                   <TableCell>{game.score}</TableCell>
-                  <TableCell>{new Date(game.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(game.startTime).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
