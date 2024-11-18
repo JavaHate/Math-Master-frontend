@@ -33,8 +33,8 @@ interface Game {
 
 const Home: React.FC = () => {
   const [username, setUsername] = useState('')
-  const [level, setLevel] = useState(5)
-  const [totalScore, setTotalScore] = useState(1250)
+  const [level, setLevel] = useState(0)
+  const [totalScore, setTotalScore] = useState(0)
   const [userId, setUserId] = useState('')
   const [games, setGames] = useState<Game[]>([])
   const [rank, setRank] = useState(0)
