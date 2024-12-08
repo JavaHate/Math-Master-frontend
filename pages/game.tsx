@@ -61,7 +61,7 @@ const Game: React.FC = () => {
   const generateProblem = async () => {
     try 
     {
-      const response = await fetch('https://javahate.azurewebsites.net/api/question/random')
+      const response = await fetch('https://javahate.azurewebsites.net/question/random')
     if (response.ok) {
       const data = await response.json();
       setProblem(data[0].text);
@@ -75,7 +75,7 @@ const Game: React.FC = () => {
 
   const generatePuzzle = async () => {
     try {
-      const response = await fetch('/api/question/random')
+      const response = await fetch('https://javahate.azurewebsites.net/question/random')
       if (response.ok) {
         const data = await response.json()
         const equation = data[0].text + '=' + eval(data[0].text)
@@ -184,7 +184,7 @@ const Game: React.FC = () => {
     };
 
     try {
-      const response = await fetch('https://javahate.azurewebsites.net/api/game', {
+      const response = await fetch('https://javahate.azurewebsites.net/game', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

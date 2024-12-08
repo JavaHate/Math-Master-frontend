@@ -55,7 +55,7 @@ export default function RegisterForm() {
 
   const createUser = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch('https://javahate.azurewebsites.net/api/user', {
+      const response = await fetch('https://javahate.azurewebsites.net/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

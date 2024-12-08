@@ -46,12 +46,11 @@ export default function LoginForm() {
 
   const loginUser = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await fetch('https://javahate.azurewebsites.net/api/user/login', {
+      const response = await fetch('https://javahate.azurewebsites.net/game/all', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
+        }
       });
       const result = await response.json();
   
