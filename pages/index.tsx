@@ -185,7 +185,7 @@ const Home: React.FC = () => {
             <TabsTrigger value="statistics">Statistics</TabsTrigger>
           </TabsList>
           <TabsContent value="game-modes" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-3">
               <Card>
                 <CardHeader>
                   <CardTitle>Time Trial</CardTitle>
@@ -205,6 +205,17 @@ const Home: React.FC = () => {
                 <CardContent>
                   <Button className="w-full" onClick={() => handleStartGame('endless')}>
                     <InfinityIcon className="mr-2 h-4 w-4" /> Start Endless Challenge
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Number Puzzle</CardTitle>
+                  <CardDescription>Solve the equation puzzle!</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full" onClick={() => handleStartGame('puzzles')}>
+                    <Settings className="mr-2 h-4 w-4" /> Start Puzzle
                   </Button>
                 </CardContent>
               </Card>
