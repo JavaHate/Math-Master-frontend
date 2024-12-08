@@ -47,7 +47,7 @@ const Game: React.FC = () => {
   const generateProblem = async () => {
     try 
     {
-      const response = await fetch('/api/question/random')
+      const response = await fetch('https://javahate.azurewebsites.net/api/question/random')
     if (response.ok) {
       const data = await response.json();
       setProblem(data[0].text);
@@ -84,7 +84,7 @@ const Game: React.FC = () => {
     };
 
     try {
-      const response = await fetch('api/game', {
+      const response = await fetch('https://javahate.azurewebsites.net/api/game', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

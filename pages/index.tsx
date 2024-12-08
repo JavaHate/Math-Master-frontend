@@ -42,7 +42,7 @@ const Home: React.FC = () => {
 
   const fetchUserId = async () => {
     try {
-      const response = await fetch('/api/user/id/' + localStorage.getItem('currentUserId'))
+      const response = await fetch('https://javahate.azurewebsites.net/api/user/id/' + localStorage.getItem('currentUserId'))
       if (response.ok) {
         const data = await response.json()
         setUserId(data.id)
@@ -58,7 +58,7 @@ const Home: React.FC = () => {
 
   const fetchUsername = async (userId: string) => {
     try {
-      const response = await fetch(`/api/user/id/${userId}`)
+      const response = await fetch(`https://javahate.azurewebsites.net/api/user/id/${userId}`)
       if (response.ok) {
         const data = await response.json()
         return data.username
@@ -102,7 +102,7 @@ const Home: React.FC = () => {
 
   const fetchGames = async () => {
     try {
-      const response = await fetch('/api/game/all')
+      const response = await fetch('https://javahate.azurewebsites.net/api/game/all')
       if (response.ok) {
         const data = await response.json()
         const gamesWithUsernames = await Promise.all(data.map(async (game: Game) => {
