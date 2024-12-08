@@ -5,7 +5,7 @@ module.exports = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:5032/:path*', // Proxy to Backend
+        destination: 'https://javahate.azurewebsites.net/:path*', // Proxy to Backend
       },
     ];
   },
