@@ -50,7 +50,8 @@ export default function LoginForm() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify(values),
       });
       const result = await response.json();
   
