@@ -11,7 +11,6 @@ export default function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center space-x-4">
-            <img src="" alt="MathMaster logo" className="h-12 w-12 rounded-lg" />
             <h1 className="text-2xl font-bold md:text-3xl lg:text-4xl">MathMaster</h1>
           </div>
           <nav className="flex items-center space-x-4">
