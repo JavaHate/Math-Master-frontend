@@ -48,6 +48,7 @@ const Game: React.FC = () => {
           if (prevTime <= 1) {
             clearInterval(timer)
             setGameOver(true)
+            saveGame()
             return 0
           }
           return prevTime - 1
@@ -57,7 +58,7 @@ const Game: React.FC = () => {
     } else if (gameMode === 'puzzles') {
       generatePuzzle()
     }
-  }, [gameMode])
+  }, [gameMode, score])
 
   const generateProblem = async () => {
     try 
@@ -106,8 +107,8 @@ const Game: React.FC = () => {
     } else {
       if (gameMode === 'endless') {
         setGameOver(true);
+        saveGame()
       }
-      saveGame()
     }
     setAnswer('')
   }
@@ -165,7 +166,7 @@ const Game: React.FC = () => {
     if (guessString === solution) {
       setIsGameWon(true)
       setGameOver(true)
-      saveGame() 
+      saveGame(solution.length) 
     } else if (currentRow === 5) {
       setGameOver(true)
       saveGame()
@@ -175,10 +176,10 @@ const Game: React.FC = () => {
     setCurrentGuess(Array(solution.length).fill(''))
   }
 
-  const saveGame = async () => {
+  const saveGame = async (gameScore: number | null = null) => {
     const gameData = {
       gameMode: gameMode,
-      score: gameMode === 'puzzles' ? solution.length : score,
+      score: gameScore === null ? score : gameScore,
       startTime: startTime,
       endTime: localISOTime(),
       userId: userId
