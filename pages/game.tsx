@@ -48,7 +48,6 @@ const Game: React.FC = () => {
           if (prevTime <= 1) {
             clearInterval(timer)
             setGameOver(true)
-            saveGame();
             return 0
           }
           return prevTime - 1
@@ -106,11 +105,9 @@ const Game: React.FC = () => {
       generateProblem()
     } else {
       if (gameMode === 'endless') {
-        setGameOver(true);
-        saveGame();
-      } else if (gameMode === 'timetrial') {
-
+        setGameOver(true); 
       }
+      saveGame()
     }
     setAnswer('')
   }
@@ -181,7 +178,7 @@ const Game: React.FC = () => {
   const saveGame = async () => {
     const gameData = {
       gameMode: gameMode,
-      score: score,
+      score: gameMode === 'puzzles' ? solution.length : score,
       startTime: startTime,
       endTime: localISOTime(),
       userId: userId
