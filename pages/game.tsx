@@ -31,7 +31,8 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     if (mode) {
-      setGameMode(mode as string)
+      const normalizedMode = mode.toString().replace(/-/g, '').toLowerCase();
+        setGameMode(normalizedMode);
     }
   }, [mode])
 
@@ -41,12 +42,13 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     generateProblem()
-    if (gameMode === 'time-trial') {
+    if (gameMode === 'timetrial') {
       const timer = setInterval(() => {
         setTimeLeft((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(timer)
             setGameOver(true)
+            saveGame();
             return 0
           }
           return prevTime - 1
@@ -104,9 +106,11 @@ const Game: React.FC = () => {
       generateProblem()
     } else {
       if (gameMode === 'endless') {
-        setGameOver(true)
+        setGameOver(true);
+        saveGame();
+      } else if (gameMode === 'timetrial') {
+
       }
-      saveGame()
     }
     setAnswer('')
   }
@@ -183,6 +187,8 @@ const Game: React.FC = () => {
       userId: userId
     };
 
+    console.log("Saving Game", gameData); //bandau
+
     try {
       const response = await fetch('https://javahate.azurewebsites.net/game', {
         method: 'POST',
@@ -219,16 +225,16 @@ const Game: React.FC = () => {
       <Header />
       <main className="container mx-auto px-4">
         <h1 className="text-4xl font-bold text-center mt-20">
-          {gameMode === 'time-trial' ? 'Time Trial Mode' : gameMode === 'endless' ? 'Endless Mode' : 'Puzzles'}
+          {gameMode === 'timetrial' ? 'Time Trial Mode' : gameMode === 'endless' ? 'Endless Mode' : 'Puzzles'}
         </h1>
         <p className="text-center mt-4 text-xl text-gray-600">
-          {gameMode === 'time-trial' ? 'Race against the clock!' : gameMode === 'endless' ? 'How long can you last?' : 'Solve the puzzle!'}
+          {gameMode === 'timetrial' ? 'Race against the clock!' : gameMode === 'endless' ? 'How long can you last?' : 'Solve the puzzle!'}
         </p>
         <div className="mt-12 flex justify-center">
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle className="text-center">
-                {gameMode === 'puzzles' ? 'Number Puzzle' : gameMode === 'time-trial' ? `Time Left: ${timeLeft}s` : gameMode === 'endless' ? `Score: ${score}` : 'Puzzles'}
+                {gameMode === 'puzzles' ? 'Number Puzzle' : gameMode === 'timetrial' ? `Time Left: ${timeLeft}s` : gameMode === 'endless' ? `Score: ${score}` : 'Puzzles'}
               </CardTitle>
             </CardHeader>
             <CardContent>
