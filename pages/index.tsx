@@ -192,7 +192,7 @@ const Home: React.FC = () => {
                   <CardDescription>Race against the clock!</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className="w-full" onClick={() => handleStartGame('time-trial')}>
+                  <Button className="w-full" onClick={() => handleStartGame('timetrial')}>
                     <Clock className="mr-2 h-4 w-4" /> Start Time Trial
                   </Button>
                 </CardContent>
